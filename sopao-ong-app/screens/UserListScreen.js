@@ -30,11 +30,18 @@ export default function UserListScreen({ navigation, route }) {
     console.log('Tentando listar usuários...');
     try {
       const response = await axios.get(`${BASE_URL}/api/users`, {
-        timeout: 90000, // Aumentado para 90 segundos para lidar com possíveis atrasos no Render
+        timeout: 120000, // Aumentado para 120 segundos para lidar com possíveis atrasos no Render
       });
       console.log('Resposta da API:', JSON.stringify(response.data, null, 2));
       if (Array.isArray(response.data)) {
-        setUsers(response.data);
+        // Decodificar os campos que podem conter %20
+        const decodedUsers = response.data.map(user => ({
+          ...user,
+          name: decodeURIComponent(user.name || 'Nome não disponível'),
+          address: decodeURIComponent(user.address || ''),
+          church_name: user.church_name ? decodeURIComponent(user.church_name) : '',
+        }));
+        setUsers(decodedUsers);
       } else {
         console.log('Dados não são um array:', response.data);
         setUsers([]);
@@ -53,10 +60,17 @@ export default function UserListScreen({ navigation, route }) {
   const handleToggleActive = async (userId) => {
     try {
       const response = await axios.patch(`${BASE_URL}/api/users/${userId}/toggle-active`, {
-        timeout: 90000, // Aumentado para 90 segundos
+        timeout: 120000, // Aumentado para 120 segundos
       });
-      setUsers(users.map(user => user.id === userId ? response.data : user));
-      Alert.alert('Sucesso', `Usuário ${response.data.active ? 'reativado' : 'desativado'} com sucesso!`);
+      // Decodificar os campos do usuário atualizado
+      const updatedUser = {
+        ...response.data,
+        name: decodeURIComponent(response.data.name || 'Nome não disponível'),
+        address: decodeURIComponent(response.data.address || ''),
+        church_name: response.data.church_name ? decodeURIComponent(response.data.church_name) : '',
+      };
+      setUsers(users.map(user => (user.id === userId ? updatedUser : user)));
+      Alert.alert('Sucesso', `Usuário ${updatedUser.active ? 'reativado' : 'desativado'} com sucesso!`);
     } catch (err) {
       console.log('Erro ao desativar/reativar:', err.response ? err.response.data : err.message);
       Alert.alert('Erro', err.response?.data?.error || 'Falha ao desativar/reativar o usuário.');
@@ -128,7 +142,7 @@ export default function UserListScreen({ navigation, route }) {
               renderItem={({ item }) => (
                 <View style={styles.item}>
                   <Text style={styles.itemText}>
-                    {item.name || 'Nome não disponível'} - {item.active ? 'Ativo' : 'Desativado'}
+                    {item.name} - {item.active ? 'Ativo' : 'Desativado'}
                   </Text>
                   <View style={styles.buttonContainer}>
                     <TouchableOpacity

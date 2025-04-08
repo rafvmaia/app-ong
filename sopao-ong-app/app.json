@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Sopao ONG",
-    "slug": "sopao-ong",
+    "slug": "ong-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,9 @@
     "android": {
       "package": "com.sopaoong.app",
       "versionCode": 1,
-      "permissions": ["android.permission.DETECT_SCREEN_CAPTURE"],
+      "permissions": [
+        "android.permission.DETECT_SCREEN_CAPTURE"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FEF1E9"
@@ -38,6 +40,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "description": "Aplicativo da ONG Sopão para gerenciamento de usuários."
+    "description": "Aplicativo da ONG Sopão para gerenciamento de usuários.",
+    "owner": "rafvmaia"
   }
 }

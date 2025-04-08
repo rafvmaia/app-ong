@@ -9,6 +9,9 @@ import {
   Alert,
   Switch,
   Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -85,109 +88,116 @@ export default function EditUserScreen({ navigation, route }) {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-          <Image
-            source={require('../assets/ong-logo.png')} // Adicionando a logo
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
-            <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-        </View>
-
-        {menuVisible && (
-          <View style={styles.menu}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
             <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                toggleMenu();
-                navigation.navigate('Register');
-              }}
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
             >
-              <Text style={styles.menuText}>Cadastrar Usuários</Text>
+              <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                toggleMenu();
-                navigation.navigate('List');
-              }}
-            >
-              <Text style={styles.menuText}>Listar Usuários</Text>
+            <Image
+              source={require('../assets/ong-logo.png')} // Adicionando a logo
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
+              <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
             </TouchableOpacity>
           </View>
-        )}
 
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Editar Usuário</Text>
-          <Text style={styles.label}>Nome:</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Digite o nome"
-          />
-
-          <Text style={styles.label}>Data de Nascimento:</Text>
-          <Text style={styles.inputDisabled}>{birthdate}</Text>
-
-          <Text style={styles.label}>Endereço:</Text>
-          <TextInput
-            style={styles.input}
-            value={address}
-            onChangeText={setAddress}
-          />
-
-          <Text style={styles.label}>Telefone:</Text>
-          <TextInput
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-          />
-
-          <View style={styles.switchContainer}>
-            <Text style={styles.label}>Bolsa Família?</Text>
-            <Switch
-              value={bolsaFamilia}
-              onValueChange={setBolsaFamilia}
-              trackColor={{ false: '#d32f2f', true: '#166534' }}
-            />
-          </View>
-
-          <View style={styles.switchContainer}>
-            <Text style={styles.label}>Frequenta Igreja?</Text>
-            <Switch
-              value={attendsChurch}
-              onValueChange={setAttendsChurch}
-              trackColor={{ false: '#d32f2f', true: '#166534' }}
-            />
-          </View>
-
-          {attendsChurch && (
-            <>
-              <Text style={styles.label}>Nome da Igreja:</Text>
-              <TextInput
-                style={styles.input}
-                value={churchName}
-                onChangeText={setChurchName}
-                placeholder="Digite o nome da igreja"
-              />
-            </>
+          {menuVisible && (
+            <View style={styles.menu}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  toggleMenu();
+                  navigation.navigate('Register');
+                }}
+              >
+                <Text style={styles.menuText}>Cadastrar Usuários</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  toggleMenu();
+                  navigation.navigate('List');
+                }}
+              >
+                <Text style={styles.menuText}>Listar Usuários</Text>
+              </TouchableOpacity>
+            </View>
           )}
 
-          <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-            <Text style={styles.updateButtonText}>Atualizar</Text>
-          </TouchableOpacity>
+          <ScrollView contentContainerStyle={[styles.formContainer, { paddingBottom: 100 }]}>
+            <Text style={styles.title}>Editar Usuário</Text>
+            <Text style={styles.label}>Nome:</Text>
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+              placeholder="Digite o nome"
+            />
+
+            <Text style={styles.label}>Data de Nascimento:</Text>
+            <Text style={styles.inputDisabled}>{birthdate}</Text>
+
+            <Text style={styles.label}>Endereço:</Text>
+            <TextInput
+              style={styles.input}
+              value={address}
+              onChangeText={setAddress}
+            />
+
+            <Text style={styles.label}>Telefone:</Text>
+            <TextInput
+              style={styles.input}
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
+
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>Bolsa Família?</Text>
+              <Switch
+                value={bolsaFamilia}
+                onValueChange={setBolsaFamilia}
+                trackColor={{ false: '#d32f2f', true: '#166534' }}
+              />
+            </View>
+
+            <View style={styles.switchContainer}>
+              <Text style={styles.label}>Frequenta Igreja?</Text>
+              <Switch
+                value={attendsChurch}
+                onValueChange={setAttendsChurch}
+                trackColor={{ false: '#d32f2f', true: '#166534' }}
+              />
+            </View>
+
+            {attendsChurch && (
+              <>
+                <Text style={styles.label}>Nome da Igreja:</Text>
+                <TextInput
+                  style={styles.input}
+                  value={churchName}
+                  onChangeText={setChurchName}
+                  placeholder="Digite o nome da igreja"
+                />
+              </>
+            )}
+
+            <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+              <Text style={styles.updateButtonText}>Atualizar</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -249,7 +259,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   formContainer: {
-    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
   },

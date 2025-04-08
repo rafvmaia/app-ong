@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Switch, Alert, StyleSheet, ImageBackground, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TextInput, Switch, Alert, StyleSheet, ImageBackground, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -105,97 +105,115 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <ImageBackground source={require('../assets/background.jpg')} style={styles.background} resizeMode="cover">
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-            <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-          <Image source={require('../assets/ong-logo.png')} style={styles.logo} resizeMode="contain" />
-          <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
-            <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-        </View>
-        {menuVisible && (
-          <View style={styles.menu}>
-            <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('Register'); }}>
-              <Text style={styles.menuText}>Cadastrar Usuários</Text>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+              <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('List'); }}>
-              <Text style={styles.menuText}>Listar Usuários</Text>
+            <Image source={require('../assets/ong-logo.png')} style={styles.logo} resizeMode="contain" />
+            <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
+              <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
             </TouchableOpacity>
           </View>
-        )}
-        <View style={styles.formContainer}>
-          <Text style={styles.label}>Nome Completo</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="José"
-            value={form.name}
-            onChangeText={(text) => handleInputChange('name', text)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="default"
-          />
-          <Text style={styles.label}>Data de Nascimento</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="DDMMYYYY"
-            value={form.birthdate}
-            onChangeText={(text) => handleInputChange('birthdate', text)}
-            keyboardType="numeric"
-            autoCorrect={false}
-            maxLength={10} // Permite até 10 caracteres para DD/MM/YYYY após formatação
-          />
-          <Text style={styles.label}>Endereço</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Rua Açúcar"
-            value={form.address}
-            onChangeText={(text) => handleInputChange('address', text)}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="default"
-          />
-          <Text style={styles.label}>Telefone</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="123456789"
-            value={form.phone}
-            onChangeText={(text) => handleInputChange('phone', text)}
-            keyboardType="phone-pad"
-            autoCorrect={false}
-          />
-          <View style={styles.switch}>
-            <Text style={styles.label}>Ativo?</Text>
-            <Switch value={form.active} onValueChange={(value) => setForm((prev) => ({ ...prev, active: value }))} trackColor={{ false: '#d32f2f', true: '#166534' }} />
-          </View>
-          <View style={styles.switch}>
-            <Text style={styles.label}>Bolsa Família?</Text>
-            <Switch value={form.bolsa_familia} onValueChange={(value) => setForm((prev) => ({ ...prev, bolsa_familia: value }))} trackColor={{ false: '#d32f2f', true: '#166534' }} />
-          </View>
-          <View style={styles.switch}>
-            <Text style={styles.label}>Frequenta Igreja?</Text>
-            <Switch value={form.attends_church} onValueChange={(value) => setForm((prev) => ({ ...prev, attends_church: value }))} trackColor={{ false: '#d32f2f', true: '#166534' }} />
-          </View>
-          {form.attends_church && (
-            <>
-              <Text style={styles.label}>Nome da Igreja</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Igreja Açores"
-                value={form.church_name}
-                onChangeText={(text) => handleInputChange('church_name', text)}
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="default"
-              />
-            </>
+          {menuVisible && (
+            <View style={styles.menu}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('Register'); }}>
+                <Text style={styles.menuText}>Cadastrar Usuários</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('List'); }}>
+                <Text style={styles.menuText}>Listar Usuários</Text>
+              </TouchableOpacity>
+            </View>
           )}
-          <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-            <Text style={styles.buttonText}>Cadastrar</Text>
-          </TouchableOpacity>
+          <ScrollView contentContainerStyle={[styles.formContainer, { paddingBottom: 100 }]}>
+            <Text style={styles.label}>Nome Completo</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="José"
+              value={form.name}
+              onChangeText={(text) => handleInputChange('name', text)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+            />
+            <Text style={styles.label}>Data de Nascimento</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="DDMMYYYY"
+              value={form.birthdate}
+              onChangeText={(text) => handleInputChange('birthdate', text)}
+              keyboardType="numeric"
+              autoCorrect={false}
+              maxLength={10}
+            />
+            <Text style={styles.label}>Endereço</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Rua Açúcar"
+              value={form.address}
+              onChangeText={(text) => handleInputChange('address', text)}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="default"
+            />
+            <Text style={styles.label}>Telefone</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="123456789"
+              value={form.phone}
+              onChangeText={(text) => handleInputChange('phone', text)}
+              keyboardType="phone-pad"
+              autoCorrect={false}
+            />
+            <View style={styles.switch}>
+              <Text style={styles.label}>Ativo?</Text>
+              <Switch
+                value={form.active}
+                onValueChange={(value) => setForm((prev) => ({ ...prev, active: value }))}
+                trackColor={{ false: '#d32f2f', true: '#166534' }}
+              />
+            </View>
+            <View style={styles.switch}>
+              <Text style={styles.label}>Bolsa Família?</Text>
+              <Switch
+                value={form.bolsa_familia}
+                onValueChange={(value) => setForm((prev) => ({prev, bolsa_familia: value }))}
+                trackColor={{ false: '#d32f2f', true: '#166534' }}
+              />
+            </View>
+            <View style={styles.switch}>
+              <Text style={styles.label}>Frequenta Igreja?</Text>
+              <Switch
+                value={form.attends_church}
+                onValueChange={(value) => setForm((prev) => ({ ...prev, attends_church: value }))}
+                trackColor={{ false: '#d32f2f', true: '#166534' }}
+              />
+            </View>
+            {form.attends_church && (
+              <>
+                <Text style={styles.label}>Nome da Igreja</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Igreja Açores"
+                  value={form.church_name}
+                  onChangeText={(text) => handleInputChange('church_name', text)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  keyboardType="default"
+                />
+              </>
+            )}
+            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+              <Text style={styles.buttonText}>Cadastrar</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -210,7 +228,7 @@ const styles = StyleSheet.create({
   menu: { backgroundColor: '#0099DD', position: 'absolute', top: 100, right: 20, width: 200, borderRadius: 10, padding: 10, zIndex: 1, elevation: 10 },
   menuItem: { paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: 'rgba(255, 255, 255, 0.2)' },
   menuText: { color: 'white', fontSize: 16 },
-  formContainer: { flex: 1, paddingHorizontal: 30, paddingBottom: 20 },
+  formContainer: { paddingHorizontal: 30, paddingBottom: 20 },
   label: { fontSize: 16, color: '#1E3A8A', marginBottom: 5 },
   input: { borderWidth: 1, borderColor: '#1E3A8A', borderRadius: 10, marginBottom: 10, padding: 10, backgroundColor: 'white' },
   switch: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Font from 'expo-font';
@@ -27,7 +27,6 @@ function HomeScreen({ navigation }) {
           />
         </View>
 
-
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -55,32 +54,35 @@ function HomeScreen({ navigation }) {
 }
 
 export default function App() {
-  const [fontLoaded, setFontLoaded] = useState(false);
+  const [appIsReady, setAppIsReady] = useState(false);
 
-  const loadFonts = async () => {
-    try {
-      await Font.loadAsync({
-        'PoppinsRegular': require('./assets/fonts/Poppins-Regular.ttf'),
-        'PoppinsBold': require('./assets/fonts/Poppins-Bold.ttf'),
-        'PoppinsBlack': require('./assets/fonts/Poppins-Black.ttf'),
-      });
-      console.log('Fontes Poppins carregadas com sucesso!');
-    } catch (error) {
-      console.log('Erro ao carregar fontes:', error);
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Keep the splash screen visible while we fetch resources
+        await SplashScreen.preventAutoHideAsync();
+        // Load fonts
+        await Font.loadAsync({
+          'PoppinsRegular': require('./assets/fonts/Poppins-Regular.ttf'),
+          'PoppinsBold': require('./assets/fonts/Poppins-Bold.ttf'),
+          'PoppinsBlack': require('./assets/fonts/Poppins-Black.ttf'),
+        });
+        console.log('Fontes Poppins carregadas com sucesso!');
+      } catch (error) {
+        console.log('Erro ao carregar fontes:', error);
+      } finally {
+        // Tell the app to render
+        setAppIsReady(true);
+        await SplashScreen.hideAsync();
+      }
     }
-  };
 
-  if (!fontLoaded) {
-    return (
-      <AppLoading
-        startAsync={loadFonts}
-        onFinish={() => {
-          console.log('AppLoading: Fontes finalizadas!');
-          setFontLoaded(true);
-        }}
-        onError={(error) => console.log('AppLoading: Erro ao carregar fontes:', error)}
-      />
-    );
+    prepare();
+  }, []);
+
+  // If the app is not ready, return null (the splash screen will remain visible)
+  if (!appIsReady) {
+    return null;
   }
 
   return (

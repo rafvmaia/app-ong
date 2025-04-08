@@ -8,6 +8,9 @@ import {
   ImageBackground,
   TouchableOpacity,
   Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
@@ -34,7 +37,6 @@ export default function UserListScreen({ navigation, route }) {
       });
       console.log('Resposta da API:', JSON.stringify(response.data, null, 2));
       if (Array.isArray(response.data)) {
-        // Decodificar os campos que podem conter %20
         const decodedUsers = response.data.map(user => ({
           ...user,
           name: decodeURIComponent(user.name || 'Nome não disponível'),
@@ -62,7 +64,6 @@ export default function UserListScreen({ navigation, route }) {
       const response = await axios.patch(`${BASE_URL}/api/users/${userId}/toggle-active`, {
         timeout: 120000, // Aumentado para 120 segundos
       });
-      // Decodificar os campos do usuário atualizado
       const updatedUser = {
         ...response.data,
         name: decodeURIComponent(response.data.name || 'Nome não disponível'),
@@ -87,86 +88,91 @@ export default function UserListScreen({ navigation, route }) {
       style={styles.background}
       resizeMode="cover"
     >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.navigate('Home')}
-          >
-            <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-          <Image
-            source={require('../assets/ong-logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
-          <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
-            <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
-          </TouchableOpacity>
-        </View>
-
-        {menuVisible && (
-          <View style={styles.menu}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <View style={styles.container}>
+          <View style={styles.header}>
             <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                toggleMenu();
-                navigation.navigate('Register');
-              }}
+              style={styles.backButton}
+              onPress={() => navigation.navigate('Home')}
             >
-              <Text style={styles.menuText}>Cadastrar Usuários</Text>
+              <Ionicons name="arrow-back" size={30} color="#1E3A8A" />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuItem}
-              onPress={() => {
-                toggleMenu();
-                navigation.navigate('List');
-              }}
-            >
-              <Text style={styles.menuText}>Listar Usuários</Text>
+            <Image
+              source={require('../assets/ong-logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
+              <Ionicons name={menuVisible ? 'close' : 'menu'} size={30} color="#1E3A8A" />
             </TouchableOpacity>
           </View>
-        )}
 
-        <View style={styles.listContainer}>
-          {loading ? (
-            <Text style={styles.loadingText}>Carregando todos os usuários cadastrados...</Text>
-          ) : error ? (
-            <Text style={styles.errorText}>{error}</Text>
-          ) : users.length === 0 ? (
-            <Text style={styles.noDataText}>Nenhum usuário cadastrado.</Text>
-          ) : (
-            <FlatList
-              data={users}
-              keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
-              renderItem={({ item }) => (
-                <View style={styles.item}>
-                  <Text style={styles.itemText}>
-                    {item.name} - {item.active ? 'Ativo' : 'Desativado'}
-                  </Text>
-                  <View style={styles.buttonContainer}>
-                    <TouchableOpacity
-                      style={styles.editButton}
-                      onPress={() => navigation.navigate('EditUser', { user: item })}
-                    >
-                      <Ionicons name="create" size={20} color="white" />
-                      <Text style={styles.buttonText}>Editar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.toggleButton}
-                      onPress={() => handleToggleActive(item.id)}
-                    >
-                      <Ionicons name={item.active ? "eye-off" : "eye"} size={20} color="white" />
-                      <Text style={styles.buttonText}>{item.active ? 'Desativar' : 'Reativar'}</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              )}
-              ListEmptyComponent={<Text style={styles.noDataText}>Nenhum usuário cadastrado.</Text>}
-            />
+          {menuVisible && (
+            <View style={styles.menu}>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  toggleMenu();
+                  navigation.navigate('Register');
+                }}
+              >
+                <Text style={styles.menuText}>Cadastrar Usuários</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => {
+                  toggleMenu();
+                  navigation.navigate('List');
+                }}
+              >
+                <Text style={styles.menuText}>Listar Usuários</Text>
+              </TouchableOpacity>
+            </View>
           )}
+
+          <ScrollView contentContainerStyle={[styles.listContainer, { paddingBottom: 100 }]}>
+            {loading ? (
+              <Text style={styles.loadingText}>Carregando todos os usuários cadastrados...</Text>
+            ) : error ? (
+              <Text style={styles.errorText}>{error}</Text>
+            ) : (
+              <FlatList
+                data={users}
+                keyExtractor={(item) => item.id?.toString() || Math.random().toString()}
+                renderItem={({ item }) => (
+                  <View style={styles.item}>
+                    <Text style={styles.itemText}>
+                      {item.name} - {item.active ? 'Ativo' : 'Desativado'}
+                    </Text>
+                    <View style={styles.buttonContainer}>
+                      <TouchableOpacity
+                        style={styles.editButton}
+                        onPress={() => navigation.navigate('EditUser', { user: item })}
+                      >
+                        <Ionicons name="create" size={20} color="white" />
+                        <Text style={styles.buttonText}>Editar</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.toggleButton}
+                        onPress={() => handleToggleActive(item.id)}
+                      >
+                        <Ionicons name={item.active ? "eye-off" : "eye"} size={20} color="white" />
+                        <Text style={styles.buttonText}>{item.active ? 'Desativar' : 'Reativar'}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+                ListEmptyComponent={<Text style={styles.noDataText}>Nenhum usuário cadastrado.</Text>}
+                scrollEnabled={false} // Desativa a rolagem do FlatList, deixando o ScrollView controlar
+              />
+            )}
+          </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 }
@@ -221,7 +227,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   listContainer: {
-    flex: 1,
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 20,

@@ -16,7 +16,7 @@ app.use(cors({
 app.use(express.json({ type: ['application/json', 'application/json; charset=UTF-8'], limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware para depuração (apenas registra informações, sem manipular o corpo)
+// Middleware para depuração (apenas registra inrformações, sem manipular o corpo)
 app.use((req, res, next) => {
   console.log('Método:', req.method);
   console.log('URL:', req.url);

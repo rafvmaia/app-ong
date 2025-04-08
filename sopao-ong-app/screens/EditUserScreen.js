@@ -8,10 +8,12 @@ import {
   TextInput,
   Alert,
   Switch,
-  Image, // Adicionado para usar a logo
+  Image,
 } from 'react-native';
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
+
+const BASE_URL = 'https://app-ong.onrender.com'; // Novo URL do Render
 
 export default function EditUserScreen({ navigation, route }) {
   const { user } = route.params;
@@ -57,8 +59,8 @@ export default function EditUserScreen({ navigation, route }) {
 
     console.log('Dados a serem enviados:', updatedUserData);
     try {
-      const response = await axios.put(`http://10.0.2.2:5000/api/users/${user.id}`, updatedUserData, {
-        timeout: 30000,
+      const response = await axios.put(`${BASE_URL}/api/users/${user.id}`, updatedUserData, {
+        timeout: 90000, // Aumentado para 90 segundos para lidar com possíveis atrasos no Render
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
           'Accept': 'application/json; charset=UTF-8',
@@ -69,7 +71,7 @@ export default function EditUserScreen({ navigation, route }) {
       Alert.alert('Sucesso', 'Usuário atualizado com sucesso!');
     } catch (err) {
       console.log('Erro ao atualizar:', err.response ? err.response.data : err.message);
-      Alert.alert('Erro', 'Falha ao atualizar o usuário.');
+      Alert.alert('Erro', err.response?.data?.error || 'Falha ao atualizar o usuário.');
     }
   };
 
@@ -142,7 +144,6 @@ export default function EditUserScreen({ navigation, route }) {
             style={styles.input}
             value={address}
             onChangeText={setAddress}
-            placeholder="Digite o endereço"
           />
 
           <Text style={styles.label}>Telefone:</Text>
@@ -150,8 +151,6 @@ export default function EditUserScreen({ navigation, route }) {
             style={styles.input}
             value={phone}
             onChangeText={setPhone}
-            placeholder="Digite o telefone"
-            keyboardType="phone-pad"
           />
 
           <View style={styles.switchContainer}>

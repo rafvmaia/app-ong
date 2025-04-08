@@ -12,6 +12,8 @@ import {
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
+const BASE_URL = 'https://app-ong.onrender.com'; // Novo URL do Render
+
 export default function UserListScreen({ navigation, route }) {
   const [users, setUsers] = useState([]);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -27,7 +29,9 @@ export default function UserListScreen({ navigation, route }) {
     setError(null);
     console.log('Tentando listar usuários...');
     try {
-      const response = await axios.get('http://10.0.2.2:5000/api/users', { timeout: 30000 });
+      const response = await axios.get(`${BASE_URL}/api/users`, {
+        timeout: 90000, // Aumentado para 90 segundos para lidar com possíveis atrasos no Render
+      });
       console.log('Resposta da API:', JSON.stringify(response.data, null, 2));
       if (Array.isArray(response.data)) {
         setUsers(response.data);
@@ -48,12 +52,14 @@ export default function UserListScreen({ navigation, route }) {
 
   const handleToggleActive = async (userId) => {
     try {
-      const response = await axios.patch(`http://10.0.2.2:5000/api/users/${userId}/toggle-active`);
+      const response = await axios.patch(`${BASE_URL}/api/users/${userId}/toggle-active`, {
+        timeout: 90000, // Aumentado para 90 segundos
+      });
       setUsers(users.map(user => user.id === userId ? response.data : user));
       Alert.alert('Sucesso', `Usuário ${response.data.active ? 'reativado' : 'desativado'} com sucesso!`);
     } catch (err) {
-      console.log('Erro ao desativar/reativar:', err);
-      Alert.alert('Erro', 'Falha ao desativar/reativar o usuário.');
+      console.log('Erro ao desativar/reativar:', err.response ? err.response.data : err.message);
+      Alert.alert('Erro', err.response?.data?.error || 'Falha ao desativar/reativar o usuário.');
     }
   };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Font from 'expo-font';
-import AppLoading from 'expo-app-loading';
+import * as SplashScreen from 'expo-splash-screen';
 import RegisterScreen from './screens/RegisterScreen';
 import UserListScreen from './screens/UserListScreen';
 import EditUserScreen from './screens/EditUserScreen';

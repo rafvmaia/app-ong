@@ -3,6 +3,8 @@ import { View, Text, TextInput, Switch, Alert, StyleSheet, ImageBackground, Touc
 import axios from 'axios';
 import { Ionicons } from '@expo/vector-icons';
 
+const BASE_URL = 'https://app-ong.onrender.com'; // Novo URL do Render
+
 export default function RegisterScreen({ navigation }) {
   const [form, setForm] = useState({
     name: '',
@@ -19,9 +21,10 @@ export default function RegisterScreen({ navigation }) {
   const handleInputChange = (field, text) => {
     console.log(`Entrada bruta em ${field}: "${text}"`); // Log da entrada bruta
 
-    let formattedText = text.replace(/[^0-9]/g, ''); // Remove tudo que não for número
-
+    let formattedText = text;
     if (field === 'birthdate') {
+      formattedText = text.replace(/[^0-9]/g, ''); // Remove tudo que não for número
+
       // Limita o comprimento máximo a 8 dígitos (DDMMYYYY)
       if (formattedText.length > 8) {
         formattedText = formattedText.slice(0, 8);
@@ -37,10 +40,9 @@ export default function RegisterScreen({ navigation }) {
       }
 
       console.log(`Data formatada em ${field}: "${formattedText}"`); // Log da data formatada
-      setForm((prev) => ({ ...prev, [field]: formattedText }));
-    } else {
-      setForm((prev) => ({ ...prev, [field]: text || '' }));
     }
+
+    setForm((prev) => ({ ...prev, [field]: formattedText || '' }));
   };
 
   const handleSubmit = async () => {
@@ -83,8 +85,8 @@ export default function RegisterScreen({ navigation }) {
     console.log('Enviando (form-urlencoded):', formData.toString());
 
     try {
-      const response = await axios.post('http://10.0.2.2:5000/api/users', formData, {
-        timeout: 30000,
+      const response = await axios.post(`${BASE_URL}/api/users`, formData, {
+        timeout: 90000, // Aumentado para 90 segundos para lidar com possíveis atrasos no Render
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
           'Accept': 'application/json; charset=UTF-8',
@@ -118,7 +120,7 @@ export default function RegisterScreen({ navigation }) {
             <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('Register'); }}>
               <Text style={styles.menuText}>Cadastrar Usuários</Text>
             </TouchableOpacity>
-           , <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('List'); }}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => { toggleMenu(); navigation.navigate('List'); }}>
               <Text style={styles.menuText}>Listar Usuários</Text>
             </TouchableOpacity>
           </View>

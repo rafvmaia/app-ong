@@ -1,0 +1,13 @@
+# Ignorar arquivos do IDE
+.idea/
+
+# Ignorar node_modules de ambos os projetos
+sopao-ong-app/node_modules/
+sopao-ong-backend/node_modules/
+
+# Ignorar logs e caches
+*.log
+*.cache
+.expo/
+*.db
+.DS_Store

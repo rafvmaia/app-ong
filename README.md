@@ -87,5 +87,4 @@ O repositório serve como documentação completa do projeto, contendo:
 
 ## 🤝 Contato
 Desenvolvido por Rafael Valença  
-Email: rafael.valenca.dev@gmail.com  
 GitHub: https://github.com/rafvmaia
